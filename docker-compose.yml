@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Expose the app on port 3000
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=your_mongodb_cloud_connection_string
+    volumes:
+      - .:/app
+      - /app/node_modules # Ensure node_modules are used from inside the container
+    command: npm start # Use the built-in start command
