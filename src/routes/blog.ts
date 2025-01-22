@@ -29,7 +29,8 @@ const router = express.Router();
  * /blogs:
  *   get:
  *     summary: Get paginated list of blogs
- *     tags: [Blogs]
+ *     tags:
+ *       - Blogs
  *     security: []
  *     parameters:
  *       - in: query
@@ -37,23 +38,63 @@ const router = express.Router();
  *         schema:
  *           type: integer
  *           default: 1
- *         description: Page number
+ *         description: Page number to fetch.
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
  *           default: 10
- *         description: Items per page
+ *         description: Number of items to fetch per page.
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           example: '{"content":"Lorem Lorem"}'
+ *         description: >
+ *           Filters the blogs dynamically by attributes. Provide as a JSON string.
+ *           Example:
+ *           - `?filter={"author":"user123"}`
+ *           - `?filter={"title":"SWAGGER"}`
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           example: '{"title":1}'
+ *         description: >
+ *           Sorts the blogs dynamically by attributes. Provide as a JSON string.
+ *           Use `1` for ascending and `-1` for descending.
+ *           Example:
+ *           - `?sort={"title":1}`
+ *           - `?sort={"createdAt":-1}`
  *     responses:
  *       200:
- *         description: List of blogs
+ *         description: Paginated list of blogs
  *         content:
  *           application/json:
  *             example:
  *               success: true
- *               data: [{_id: "64b7e8f1c9f4b3a7d4e5f6g7", title: "Sample Blog", content: "Blog content...", author: {_id: "user123", username: "john_doe"}, createdAt: "2023-07-20T12:34:56.789Z"}]
- *               page: 1
- *               limit: 10
+ *               data:
+ *                 - _id: "64b7e8f1c9f4b3a7d4e5f6g7"
+ *                   title: "Sample Blog"
+ *                   content: "This is a sample blog post."
+ *                   author:
+ *                     _id: "user123"
+ *                     username: "john_doe"
+ *                   createdAt: "2023-07-20T12:34:56.789Z"
+ *               pagination:
+ *                 page: 1
+ *                 limit: 10
+ *                 total: 50
+ *                 totalPages: 5
+ *                 hasNext: true
+ *                 hasPrevious: false
+ *       400:
+ *         description: Invalid query format
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: "Invalid sort or filter query format. Use a valid JSON string."
  *       500:
  *         description: Server error
  */
