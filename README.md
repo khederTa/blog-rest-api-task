@@ -163,13 +163,12 @@ src/
 └── index.ts        # Server entry point
 ```
 
-
 ### Pagination Logic
 
 - Fetches data in chunks using `page` and `limit` query parameters.  
 - Supports:  
   - **Dynamic filtering** via the `filter` query by the following pattern `?filter={"<attribute_name>":"<attribute_value>"}` (e.g., `?filter={"author":"<user_id>"}` or `?filter={"title":"<blog_title>"}`).  
-  - **Dynamic sorting** via the `sort` query by the following pattern `?sort={"attribute_name":< 1 || -1 >}` where `1` for `ASC` and `-1` for `DESC` (e.g., `?sort={"title": 1}` or `?sort={"title":-1}`).  
+  - **Dynamic sorting** via the `sort` query by the following pattern `?sort={"attribute_name":< 1 OR -1 >}` where `1` for `ASC` and `-1` for `DESC` (e.g., `?sort={"title": 1}` or `?sort={"title":-1}`).  
 - Handles optional field population with Mongoose's `.populate()` for related data.  
 - Returns a response with:  
   - **Data**: The requested paginated results.  

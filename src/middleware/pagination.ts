@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express-serve-static-core";
-import { Model, PopulateOptions } from "mongoose";
+import { Model, PopulateOptions, Types } from "mongoose";
 import { PaginationOptions } from "../types/paginate";
 import { ResponseObject } from "../types/response";
 
@@ -17,15 +17,24 @@ export const paginate = <T>(
     const skip = (page - 1) * limit;
 
     // Base query filter
-    const filter = {
+    let filter: Record<string, any> = {
       ...options?.filter,
-      ...(req.query.filter ? JSON.parse(req.query.filter as string) : {}),
+      ...(req.query.filter
+        ? JSON.parse(decodeURIComponent(req.query.filter as string))
+        : {}),
     };
 
     // Transform string-based filters to case-insensitive regex for partial matching
     for (const key in filter) {
+      const schemaPath = model.schema.path(key);
       if (typeof filter[key] === "string") {
-        filter[key] = { $regex: filter[key], $options: "i" }; // Case-insensitive regex
+        if (schemaPath && schemaPath.instance === "String") {
+          // Apply regex for string fields
+          filter[key] = { $regex: filter[key], $options: "i" };
+        } else if (schemaPath && schemaPath.instance === "ObjectId") {
+          // Convert to ObjectId for fields of type ObjectId
+          filter[key] = new Types.ObjectId(filter[key]);
+        }
       }
     }
 
